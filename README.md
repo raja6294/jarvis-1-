@@ -1,3 +1,0 @@
-# JARVIS Clone
-
-Virtual Assistant
