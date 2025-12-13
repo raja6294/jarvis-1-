@@ -1,47 +1,66 @@
+// SignIn.jsx
 import React, { useState, useContext } from "react";
 import bg from "../assets/image.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
-
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const ctx = useContext(UserDataContext);
   const serverURL = ctx?.serverURL ?? "http://localhost:8000";
 
-  
-
-
-  
   const [email, setEmail] = useState("");
+
+  const [loading, setLoading]= useState(false);
+
   const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
 
-  const [err,setErr]=useState("");
-
+  const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await axios.post(
         `${serverURL}/api/auth/signin`,
-        { name, email, password },
+        { email, password },              // <-- send only email & password
         { withCredentials: true }
       );
-      console.log(res.data);
-    } catch (error) {
-      console.log(error);
-      if (error.response && error.response.data && error.response.data.message) {
-    setErr(error.response.data.message);
-  } else {
-    setErr("password must be at least 6 characters long");
-  }
+      setUserData(res.data);
+      setLoading(false);
+      navigate("/home")
 
+      console.log("signin response:", res.data);
+
+      
+      if (res.data && res.data.token) {
+        setErr("");                       
+        localStorage.setItem("token", res.data.token);
+        
+        navigate("/");                    
+      } else {
+        
+        setErr(res.data?.message || "Invalid email or password");
+      }
+    } catch (error) {
+      console.log("signin error:", error);
+      setUserData(null)
+      setLoading(false);
+
+      // prefer backend message if present
+      if (error.response?.data?.message) {
+        setErr(error.response.data.message);
+      } else {
+        setErr("Invalid email or password");
+      }
     }
   };
 
+  // background style
   const bgStyle = {
     backgroundImage: `url('${bg}')`,
     backgroundRepeat: "no-repeat",
@@ -60,14 +79,15 @@ function SignIn() {
           SignIn to <span className="text-blue-400">Virtual Assistant</span>
         </h1>
 
-       
-
         <input
           type="email"
           placeholder="Email"
-          className="w-full h-[60px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-300 px-[20px] py-[10px] rounded-full text-[18px]"
+          className="w-full h-[60px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-300 px-5 py-2.5 rounded-full text-[18px]"
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (err) setErr("");    // <-- clear old error when user types
+          }}
           value={email}
         />
 
@@ -76,9 +96,12 @@ function SignIn() {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full h-[60px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-300 px-[20px] py-[10px] rounded-full text-[18px]"
+            className="w-full h-[60px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-300 px-5 py-2.5 rounded-full text-[18px]"
             required
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (err) setErr("");    // <-- clear old error when user types
+            }}
             value={password}
           />
           <span
@@ -89,19 +112,14 @@ function SignIn() {
           </span>
         </div>
 
-        {err.length>0 && <p className="text-red-500">{err}</p>}
+        {err && <p className="text-red-500">{err}</p>}
 
         <button
           type="submit"
-          className="relative overflow-hidden min-w-[150px] h-[60px] rounded-full bg-white text-black font-semibold text-[19px] group transition-all duration-300"
+          disabled={loading}
+          className="min-w-[150px] h-[60px] rounded-full bg-white text-black font-semibold text-[19px]"
         >
-          <span className="relative z-20 group-hover:text-white transition-colors duration-300">
-            Sign In
-          </span>
-
-          <span
-            className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-green-400 scale-0 group-hover:scale-150 transition-all duration-500 ease-out z-10"
-          ></span>
+          {loading ? "Signing in..." : "Sign In"}
         </button>
 
         <div className="text-white mt-2 text-[16px]">

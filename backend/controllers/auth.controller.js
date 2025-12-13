@@ -2,11 +2,6 @@ import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 import { genToken } from '../utils/genToken.js';
 
-// REMOVE THIS LINE ❌
-// import { signUp } from "../controllers/auth.controller.js";
-
-
-// SIGNUP FUNCTION
 export const signUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;

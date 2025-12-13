@@ -10,6 +10,7 @@ function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const ctx = useContext(UserDataContext);
   const serverURL = ctx?.serverURL ?? "http://localhost:8000";
+  const { setUserData } = ctx;
 
   
 
@@ -17,12 +18,14 @@ function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [err,setErr]=useState("");
 
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -30,9 +33,14 @@ function SignUp() {
         { name, email, password },
         { withCredentials: true }
       );
-      console.log(res.data);
+      setLoading(false);
+      setUserData(res.data);
     } catch (error) {
+      setLoading(false);
       console.log(error);
+      setUserData(null);
+      setLoading(false)
+      navigate("/customize")
       if (error.response && error.response.data && error.response.data.message) {
     setErr(error.response.data.message);
   } else {
@@ -54,7 +62,7 @@ function SignUp() {
     <div className="w-full flex justify-center items-center" style={bgStyle}>
       <form
         onSubmit={handleSignUp}
-        className="w-[90%] h-[600px] max-w-[500px] bg-[#00000036] backdrop-blur shadow-lg shadow-blue-950 flex flex-col items-center justify-center gap-[20px] p-[20px] rounded-2xl"
+        className="w-[90%] h-[600px] max-w-[500px] bg-[#00000036] backdrop-blur shadow-lg shadow-blue-950 flex flex-col items-center justify-center gap-5 p-5 rounded-2xl"
       >
         <h1 className="text-white text-[30px]">
           Register to <span className="text-blue-400">Virtual Assistant</span>
@@ -100,15 +108,10 @@ function SignUp() {
 
         <button
           type="submit"
-          className="relative overflow-hidden min-w-[150px] h-[60px] rounded-full bg-white text-black font-semibold text-[19px] group transition-all duration-300"
+          disabled={loading}
+          className="min-w-[150px] h-[60px] rounded-full bg-white text-black font-semibold text-[19px]"
         >
-          <span className="relative z-20 group-hover:text-white transition-colors duration-300">
-            Sign Up
-          </span>
-
-          <span
-            className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-green-400 scale-0 group-hover:scale-150 transition-all duration-500 ease-out z-10"
-          ></span>
+          {loading ? "Signing up..." : "Sign Up"}
         </button>
 
         <div className="text-white mt-2 text-[16px]">
