@@ -1,6 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState,useContext } from "react";
+import { UserDataContext } from "../context/UserContext";
+
 import Card from "../components/Card";
 import { LuImagePlus } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+
 
 import image1 from "../assets/image1.png";
 import image2 from "../assets/image.png";
@@ -10,11 +14,17 @@ import image5 from "../assets/image5.png";
 
 export default function Customize() {
   const inputImageRef = useRef(null);
+ 
+const {serverURL,userData,setUserData,backendImage,setBackendImage,frontendImage,setFrontendImage,selectedImage,setSelectedImage}=useContext(UserDataContext)
 
-  // Image for backend upload (file object)
-  const [backendImage, setBackendImage] = useState(null);
 
-  // All cards (default + uploaded)
+
+const navigate=useNavigate();  
+
+   
+  
+
+  
   const [cards, setCards] = useState([
     image1,
     image2,
@@ -31,8 +41,8 @@ export default function Customize() {
 
     setCards((prev) => [...prev, imageURL]);
     setBackendImage(file);
+    setSelectedImage(imageURL); // Set the newly uploaded image as selected
 
-    // reset input so same file can be selected again
     e.target.value = "";
   };
 
@@ -46,12 +56,12 @@ export default function Customize() {
       </h1>
 
       <div className="w-full max-w-[900px] flex flex-wrap justify-center gap-4">
-        {/* Existing cards */}
+        
         {cards.map((img) => (
           <Card key={img} image={img} />
         ))}
 
-        {/* Add new image card */}
+        
         <div
           onClick={() => inputImageRef.current.click()}
           className="w-[150px] h-[250px] bg-[#030326] border-2 border-[#080839]
@@ -62,7 +72,7 @@ export default function Customize() {
           <LuImagePlus className="text-white w-6 h-6" />
         </div>
 
-        {/* Hidden file input */}
+      
         <input
           type="file"
           accept="image/*"
@@ -72,13 +82,16 @@ export default function Customize() {
         />
       </div>
 
-      <button
-        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg
-                   hover:bg-blue-700 transition hover:shadow-lg
-                   hover:scale-105 font-semibold"
-      >
-        Next
-      </button>
+      {selectedImage && (
+        <button
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg
+                     hover:bg-blue-700 transition hover:shadow-lg
+                     hover:scale-105 font-semibold"
+          onClick={() => navigate("/customize2")}
+        >
+          Next
+        </button>
+      )}
     </div>
   );
 }

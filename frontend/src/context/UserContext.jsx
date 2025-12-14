@@ -7,6 +7,9 @@ export function UserDataContextProvider({ children }) {
   const serverURL = "http://localhost:8000";
 
   const [userData, setUserData] = useState(null);
+  const [frontendImage, setFrontendImage]= useState(null);
+  const [backendImage, setBackendImage]= useState(null);
+const [selectedImage, setSelectedImage]= useState(null);
 
   const handleCurrentUser = async () => {
     try {
@@ -25,7 +28,11 @@ export function UserDataContextProvider({ children }) {
     userData,
     setUserData,
     handleCurrentUser,
+    backendImage, setBackendImage,
+    frontendImage, setFrontendImage,
+    selectedImage, setSelectedImage,
   };
+
 
   return (
     <UserDataContext.Provider value={value}>

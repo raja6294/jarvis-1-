@@ -10,6 +10,7 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const ctx = useContext(UserDataContext);
   const serverURL = ctx?.serverURL ?? "http://localhost:8000";
+  const { setUserData } = ctx;
 
   const [email, setEmail] = useState("");
 
@@ -32,7 +33,7 @@ function SignIn() {
       );
       setUserData(res.data);
       setLoading(false);
-      navigate("/home")
+      navigate("/")
 
       console.log("signin response:", res.data);
 
