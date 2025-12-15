@@ -43,6 +43,13 @@ const navigate=useNavigate();
     setBackendImage(file);
     setSelectedImage(imageURL); // Set the newly uploaded image as selected
 
+    // Log what is being selected / uploaded
+    console.log("Customize: image uploaded & selected", {
+      imageURL,
+      fileName: file.name,
+      fileType: file.type,
+    });
+
     e.target.value = "";
   };
 

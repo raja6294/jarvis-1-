@@ -34,7 +34,24 @@ function SignUp() {
         { withCredentials: true }
       );
       setLoading(false);
-      setUserData(res.data);
+      // Normalize userData shape to match other places (plain user object)
+      setUserData({
+        _id: res.data._id,
+        name: res.data.name,
+        email: res.data.email,
+        assistantName: res.data.assistantName || null,
+        assistantImage: res.data.assistantImage || null,
+      });
+      // store token and set axios header for subsequent requests
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+      }
+      console.log("SignUp: signup successful", {
+        name,
+        email,
+        response: res.data,
+      });
     } catch (error) {
       setLoading(false);
       console.log(error);

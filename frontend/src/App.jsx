@@ -34,15 +34,9 @@ function App() {
         element={!userData ? <SignIn /> : <Navigate to="/" />}
       />
 
-      <Route
-        path="/customize"
-        element={!userData ? <Customize /> : <Navigate to="/signin" />}
-      />
+      <Route path="/customize" element={<Customize />} />
 
-<Route
-        path="/customize2"
-        element={!userData ? <Customize2 /> : <Navigate to="/signin" />}
-      />
+      <Route path="/customize2" element={<Customize2 />} />
     </Routes>
   );
 }

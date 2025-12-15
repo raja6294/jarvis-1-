@@ -18,6 +18,9 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve static files from public directory
+app.use('/public', express.static('public'));
+
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 

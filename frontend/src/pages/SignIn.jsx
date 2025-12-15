@@ -31,16 +31,22 @@ function SignIn() {
         { email, password },              // <-- send only email & password
         { withCredentials: true }
       );
-      setUserData(res.data);
+      // Backend returns { message, user, token } → store plain user
+      setUserData(res.data.user);
       setLoading(false);
       navigate("/")
 
-      console.log("signin response:", res.data);
+      console.log("SignIn: signin successful", {
+        email,
+        response: res.data,
+      });
 
       
       if (res.data && res.data.token) {
         setErr("");                       
         localStorage.setItem("token", res.data.token);
+        // set Authorization header for subsequent requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
         
         navigate("/");                    
       } else {
